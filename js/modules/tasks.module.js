@@ -1,4 +1,4 @@
-import { getTasks, saveTasks } from "../services/storage.service.js";
+import { getTasks, saveTasks } from "../services/storage.service.js"
 
 const priorityLabels = {
   low: "Baja",
@@ -8,51 +8,35 @@ const priorityLabels = {
 
 let onChange = () => {}
 
-const todayISO = () => {
-  const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+function todayISO() {
+  const date = new Date()
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
 }
 
 export function isTaskOverdue(task) {
   return task.status !== "completed" && task.dueDate < todayISO()
 }
 
-function tasksBadge(task) {
-  if (task.status === "completed") {
-    return `<span class="badge badge-completed">Completada</span>`
-  }
-
-  if (isTaskOverdue(task)) {
-    return `<span class="badge badge-overdue">Vencida</span>`
-  }
-
-  return `
-    <span class="badge badge-${task.priority}">
-      ${priorityLabels[task.priority] || task.priority}
-    </span>
-  `
+function taskBadge(task) {
+  if (task.status === "completed") return '<span class="badge badge-completed">Completada</span>'
+  if (isTaskOverdue(task)) return '<span class="badge badge-overdue">Vencida</span>'
+  return `<span class="badge badge-${task.priority}">${priorityLabels[task.priority]}</span>`
 }
 
-const renderTaskList = (filter = "all") => {
+function renderTaskList(filter = "all") {
   const container = document.querySelector("#task-list")
-
   const tasks = getTasks()
     .filter((task) => {
-      if (filter === "all") return true;
+      if (filter === "all") return true
       if (filter === "completed") return task.status === "completed"
-      if (filter === "pending") {
-        return task.status !== "completed" && !isTaskOverdue(task)
-      }
+      if (filter === "pending") return task.status !== "completed" && !isTaskOverdue(task)
       if (filter === "overdue") return isTaskOverdue(task)
-
       return true
     })
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
 
   if (!tasks.length) {
-    container.innerHTML = `
-      <div class="empty-state">No hay tareas para este filtro.</div>
-    `
+    container.innerHTML = '<div class="empty-state">No hay tareas para este filtro.</div>'
     return
   }
 
@@ -61,33 +45,18 @@ const renderTaskList = (filter = "all") => {
       <div class="list-item-main">
         <div class="flex flex-wrap items-center gap-2">
           <p class="list-item-title">${escapeHtml(task.title)}</p>
-          ${tasksBadge(task)}
+          ${taskBadge(task)}
         </div>
-
-        <p class="list-item-meta">
-          ${escapeHtml(task.category)} - Vence ${formatDate(task.dueDate)}
-        </p>
-
-        ${task.description
-          ? `<p class="list-item-description">${escapeHtml(task.description)}</p>`
-          : ""}
+        <p class="list-item-meta">${escapeHtml(task.category)} · Vence ${formatDate(task.dueDate)}</p>
+        ${task.description ? `<p class="list-item-description">${escapeHtml(task.description)}</p>` : ""}
       </div>
-
       <div class="list-actions">
-        <button class="mini-button" data-task-action="toggle" data-id="${task.id}">
-          ${task.status === "completed" ? "Reabrir" : "Completar"}
-        </button>
-
-        <button class="mini-button" data-task-action="edit" data-id="${task.id}">
-          Editar
-        </button>
-
-        <button class="mini-button" data-task-action="delete" data-id="${task.id}">
-          Eliminar
-        </button>
+        <button class="mini-button" data-task-action="toggle" data-id="${task.id}">${task.status === "completed" ? "Reabrir" : "Completar"}</button>
+        <button class="mini-button" data-task-action="edit" data-id="${task.id}">Editar</button>
+        <button class="mini-button" data-task-action="delete" data-id="${task.id}">Eliminar</button>
       </div>
     </article>
-  `).join("");
+  `).join("")
 }
 
 function escapeHtml(value) {

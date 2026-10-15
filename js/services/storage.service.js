@@ -1,9 +1,9 @@
 const STORAGE_KEYS = {
-    tasks: "unidash.tasks",
+    tasks: "unidash360.tasks",
     transactions: "unidash360.transactions",
     preferences: "unidash360.preferences",
     tasksSeeded: "unidash360.seed.tasks",
-    transactionsSeeded: "unidash360.seed.transactions"
+    transactionsSeeded: "unidash360.seed.transactions",
 }
 
 const read = (key,fallback) => {
@@ -49,13 +49,13 @@ export function savePreferences(preferences) {
 
 export function seedDemoData() {
     const today = new Date()
-    const localStorage = (date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`
-    const addDays = (days) =>{
+    const localDate = (date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`
+    const addDays = (days) => {
         const date = new Date(today)
-        date.setDate(date.getDate()+days)
+        date.setDate(date.getDate() + days)
         return localDate(date)
     }
-    if (!localStorage.getItem(STORAGE_KEYS.tasksSeeded)) {
+    if (!localStorage.getItem(STORAGE_KEYS.tasksSeeded)){
     saveTasks([
       {
         id: crypto.randomUUID(),
